@@ -1,0 +1,3 @@
+﻿  main.cpp
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(27,20): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+  PlayerDataExtraction.vcxproj -> D:\FRED\PlayerDataExtraction\Debug\PlayerDataExtraction.exe
