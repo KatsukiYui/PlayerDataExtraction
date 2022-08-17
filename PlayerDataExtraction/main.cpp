@@ -2,19 +2,24 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
+struct vec3
+{
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+};
 
 struct PlayerData
 {
-    float x = 0;
-    float y = 0;
-    float z = 0;
+    vec3 position;
     
-    float speed = 0;
+    float speed = 0.0f;
 
     int team = -1;
 
-    int shirtNumber = -1;
+    float shirtNumber = -1;
 };
 
 std::vector<std::string> splitString(std::string& input, char separator)
@@ -40,6 +45,7 @@ std::vector<std::string> splitString(std::string& input, char separator)
 
 PlayerData convert(std::string& input)
 {
+    input += ","; //adding a coma at the end for the converter fn
     PlayerData output;
     std::string temp = "";
     int component = 0;
@@ -52,17 +58,17 @@ PlayerData convert(std::string& input)
             {
             case 0: //x
             {
-                output.x = std::stof(temp);
+                output.position.x = std::stof(temp);
                 break;
             }
             case 1: //y
             {
-                output.y = std::stof(temp);
+                output.position.y = std::stof(temp);
                 break;
             }
             case 2: //z
             {
-                output.z = std::stof(temp);
+                output.position.z = std::stof(temp);
                 break;
             }
             case 3: //speed
@@ -77,7 +83,7 @@ PlayerData convert(std::string& input)
             }
             case 5: //ShirtNumber int
             {
-                output.shirtNumber = (int)(std::stof(temp));
+                output.shirtNumber = (std::stof(temp));
                 break;
             }
             }
@@ -89,15 +95,46 @@ PlayerData convert(std::string& input)
         {
             temp += input[i];
         }
+
     }
 
     return output;
 }
 
+void formatAndSave(std::string fileName, std::map<int, std::vector<PlayerData>>& dataFrameMap)
+{
+    std::ofstream os(fileName, std::ofstream::binary);
+    if (os) 
+    {
+        for (auto& n : dataFrameMap)
+        {
+            os << "FRAME " << n.first << ": " << std::endl;
+
+            for (auto& p : dataFrameMap[n.first])
+            {
+                os << "    {" << std::endl
+                    << "        PLAYER: " << p.shirtNumber << std::endl
+                    << "        TEAM: " << p.team << std::endl
+                    << "        POSITION: " << p.position.x << "," << p.position.y << "," << p.position.z << std::endl
+                    << "        SPEED: " << p.speed << std::endl
+                    << "    }" << std::endl;
+            }
+
+            os << "------------------------------------" << std::endl << std::endl;
+
+        }
+        
+        os.close();
+    }
+
+
+}
+
 int main()
 {
     std::ifstream is("tracking.txt", std::ifstream::binary);
-    if (is) {
+    if (is) 
+    {
         // get length of file:
         is.seekg(0, is.end);
         int length = is.tellg();
@@ -105,74 +142,101 @@ int main()
 
         char* buffer = new char[length];
 
-        //std::cout << "Reading " << length << " characters... ";
+        std::map<int, std::vector<PlayerData>> dataFrameMap;
 
-        // read data as a block:
-        //is.read(buffer, length);
-        //std::cout << buffer << std::endl;
-        
-        is.getline(buffer, length);
-        //std::cout << buffer << std::endl;
 
-        //convert frame to string
-        std::string frame(buffer);
-
-        bool start = false;
-
-        std::string playerData = "";
-        //iterating over the frame's characters
-        for (std::string::size_type i = 0; i < frame.size(); i++) 
+        while (!is.eof())
         {
-            
-            if (frame[i] == ':')
+
+            //player data in each frame
+            std::vector<PlayerData> playerDataVector;
+
+            is.getline(buffer, length);
+            //std::cout << buffer << std::endl;
+            //convert frame to string
+            std::string frame(buffer);
+
+            if (frame.size() > 0)
             {
-                
-                if (!start)
+
+
+
+                bool start = false;
+
+                std::string playerData = "";
+                std::string frameNumber = "";
+
+                //iterating over the frame's characters
+                for (std::string::size_type i = 0; i < frame.size(); i++)
                 {
-                    start = true;
+
+                    if (frame[i] == ':')
+                    {
+                        if (!start)
+                        {
+                            start = true;
+
+                        }
+                        else
+                        {
+                            i = frame.size();
+                        }
+                    }
+                    else if (start)
+                    {
+                        playerData += frame[i];
+                    }
+                    else if (!start)
+                    {
+                        frameNumber += frame[i];
+                    }
+
                 }
-                else
+
+                //std::cout << playerData << std::endl;
+                std::cout << frameNumber << std::endl;
+
+
+                std::vector<std::string> playerData2 = splitString(playerData, ';');
+
+                for (int i = 0; i < playerData2.size(); i++)
                 {
-                    i = frame.size();
+                    //std::cout << playerData2[i] << std::endl;
+
+                    PlayerData temp;
+
+                    temp = convert(playerData2[i]);
+
+                    playerDataVector.push_back(temp);
                 }
+
+                //std::cout << "Number of players: " << playerDataVector.size() << std::endl;
+
+                /*
+                for (PlayerData p : playerDataVector)
+                {
+                    std::cout << "PLAYER: " << p.shirtNumber << " FROM TEAM: " << p.team <<
+                        " is at " << p.x << "," << p.y << "," << p.z << " moving at the speed of: " <<
+                        p.speed << std::endl;
+                }
+
+                */
+
+                //save data onto the frame map
+                dataFrameMap.emplace(int(std::stof(frameNumber)), playerDataVector);
+
             }
-            else if (start)
-            {
-                playerData += frame[i];
-            }
 
-        }
-
-        std::cout << playerData << std::endl;
-        
-        std::vector<std::string> playerData2 = splitString(playerData, ';');
-
-        std::vector<PlayerData> playerDataVector;
-
-        for (int i = 0; i < playerData2.size(); i++)
-        {
-            std::cout << playerData2[i] << std::endl;
-
-            PlayerData temp;
-
-            temp = convert(playerData2[i]);
-
-            playerDataVector.push_back(temp);
-        }
-
-        std::cout << "Number of players: " << playerDataVector.size() << std::endl;
-
-        for (PlayerData p : playerDataVector)
-        {
-            std::cout << "PLAYER: " << p.shirtNumber << " FROM TEAM: " << p.team <<
-                " is at " << p.x << "," << p.y << "," << p.z << " moving at the speed of: " <<
-                p.speed << std::endl;
         }
 
         is.close();
 
         // ...buffer contains the entire file...
         delete[] buffer;
+
+
+        formatAndSave("output.txt", dataFrameMap);
+
     }
 
 
