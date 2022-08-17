@@ -14,9 +14,85 @@ struct PlayerData
 
     int team = -1;
 
-    int ShirtNumber = -1;
+    int shirtNumber = -1;
 };
 
+std::vector<std::string> splitString(std::string& input, char separator)
+{
+    std::vector<std::string> output;
+    std::string temp = "";
+
+    for (std::string::size_type i = 0; i < input.size(); i++)
+    {      
+        if (input[i] == separator)
+        {
+            output.push_back(temp);
+            temp = "";
+        }
+        else
+        {
+            temp += input[i];
+        }
+    }
+
+    return output;
+}
+
+PlayerData convert(std::string& input)
+{
+    PlayerData output;
+    std::string temp = "";
+    int component = 0;
+
+    for (std::string::size_type i = 0; i < input.size(); i++)
+    {
+        if (input[i] == ',')
+        {
+            switch (component)
+            {
+            case 0: //x
+            {
+                output.x = std::stof(temp);
+                break;
+            }
+            case 1: //y
+            {
+                output.y = std::stof(temp);
+                break;
+            }
+            case 2: //z
+            {
+                output.z = std::stof(temp);
+                break;
+            }
+            case 3: //speed
+            {
+                output.speed = std::stof(temp);
+                break;
+            }
+            case 4: //team int
+            {
+                output.team = (int)(std::stof(temp));
+                break;
+            }
+            case 5: //ShirtNumber int
+            {
+                output.shirtNumber = (int)(std::stof(temp));
+                break;
+            }
+            }
+
+            component++;
+            temp = "";
+        }
+        else
+        {
+            temp += input[i];
+        }
+    }
+
+    return output;
+}
 
 int main()
 {
@@ -34,7 +110,6 @@ int main()
         // read data as a block:
         //is.read(buffer, length);
         //std::cout << buffer << std::endl;
-        const char* delim = ";";
         
         is.getline(buffer, length);
         //std::cout << buffer << std::endl;
@@ -46,21 +121,9 @@ int main()
 
         std::string playerData = "";
         //iterating over the frame's characters
-        for (std::string::size_type i = 0; i < frame.size(); i++) {
+        for (std::string::size_type i = 0; i < frame.size(); i++) 
+        {
             
-            
-            /*
-            if (frame[i] == ':')
-            {
-
-                std::cout << " COLON ";
-            }
-            else 
-            { 
-            std::cout << frame[i];
-            }
-            */
-
             if (frame[i] == ':')
             {
                 
@@ -81,23 +144,34 @@ int main()
         }
 
         std::cout << playerData << std::endl;
+        
+        std::vector<std::string> playerData2 = splitString(playerData, ';');
 
+        std::vector<PlayerData> playerDataVector;
 
-        std::vector<PlayerData> pData; 
+        for (int i = 0; i < playerData2.size(); i++)
+        {
+            std::cout << playerData2[i] << std::endl;
 
+            PlayerData temp;
 
+            temp = convert(playerData2[i]);
 
+            playerDataVector.push_back(temp);
+        }
 
-        /*
-        if (is)
-            std::cout << "all characters read successfully.";
-        else
-            std::cout << "error: only " << is.gcount() << " could be read";
-            */
+        std::cout << "Number of players: " << playerDataVector.size() << std::endl;
+
+        for (PlayerData p : playerDataVector)
+        {
+            std::cout << "PLAYER: " << p.shirtNumber << " FROM TEAM: " << p.team <<
+                " is at " << p.x << "," << p.y << "," << p.z << " moving at the speed of: " <<
+                p.speed << std::endl;
+        }
+
         is.close();
 
         // ...buffer contains the entire file...
-
         delete[] buffer;
     }
 
