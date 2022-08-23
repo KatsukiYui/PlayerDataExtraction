@@ -4,22 +4,40 @@
 #include <vector>
 #include <map>
 
+/*
 struct vec3
 {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
 };
+*/
+
+enum teamId
+{
+    Unassigned = -1,
+    Away = 0,
+    Home = 1,
+    Officials
+};
+
+struct ivec2
+{
+    int x = 0;
+    int y = 0;
+};
 
 struct PlayerData
 {
-    vec3 position;
+    ivec2 position;
     
     float speed = 0.0f;
 
-    int team = -1;
+    int teamId = -1;
 
-    float shirtNumber = -1;
+    int Id = -1;
+
+    int shirtNumber = -1;
 };
 
 std::vector<std::string> splitString(std::string& input, char separator)
@@ -58,32 +76,32 @@ PlayerData convert(std::string& input)
             {
             case 0: //x
             {
-                output.position.x = std::stof(temp);
+                output.teamId = std::stof(temp);
                 break;
             }
             case 1: //y
             {
-                output.position.y = std::stof(temp);
+                output.Id = std::stof(temp);
                 break;
             }
             case 2: //z
             {
-                output.position.z = std::stof(temp);
+                output.shirtNumber = std::stof(temp);
                 break;
             }
             case 3: //speed
             {
-                output.speed = std::stof(temp);
+                output.position.x = std::stof(temp);
                 break;
             }
             case 4: //team int
             {
-                output.team = (int)(std::stof(temp));
+                output.position.y = (int)(std::stof(temp));
                 break;
             }
             case 5: //ShirtNumber int
             {
-                output.shirtNumber = (std::stof(temp));
+                output.speed = (std::stof(temp));
                 break;
             }
             }
@@ -114,8 +132,9 @@ void formatAndSave(std::string fileName, std::map<int, std::vector<PlayerData>>&
             {
                 os << "    {" << std::endl
                     << "        PLAYER: " << p.shirtNumber << std::endl
-                    << "        TEAM: " << p.team << std::endl
-                    << "        POSITION: " << p.position.x << "," << p.position.y << "," << p.position.z << std::endl
+                    << "        ID: " << p.Id << std::endl
+                    << "        TEAM: " << p.teamId << std::endl
+                    << "        POSITION: " << p.position.x << "," << p.position.y << std::endl
                     << "        SPEED: " << p.speed << std::endl
                     << "    }" << std::endl;
             }
