@@ -55,7 +55,7 @@ struct PlayerData
 {
     ivec2 position;
     
-    float speed = 0.0f;
+    float speed = 0.0f; //cm/sec atm
 
     int teamId = -1;
 
@@ -175,41 +175,74 @@ vec2 calculateVelocity(ivec2 _pos, ivec2 _prevPos, float _speed)
 {
     //Normalized displacement vector = Vector2.Normal(framePos - prevFramePos)
     // velocity vector = above * speed
-    vec2 position{ _pos.x, _pos.y };
-    vec2 previousPosition{ _prevPos.x, _prevPos.y };
+    vec2 position{ _pos.x / 100.0f, _pos.y / 100.0f };
+    vec2 previousPosition{ _prevPos.x / 100.0f, _prevPos.y / 100.0f };
+    float speed = _speed / 100.0f;
     vec2 displacement =  vec2::subtract(position, previousPosition);
-    vec2 normalizedDisplacement = vec2::divide(displacement, 1.0f / 60.0f);
-    vec2 velocity = vec2::multiply(normalizedDisplacement, _speed);
+
+    float magnitude = sqrt(displacement.x * displacement.x + displacement.y * displacement.y);
+
+
+    // normalize vector
+    vec2 normalizedDisplacement = vec2::divide(displacement, magnitude);
+
+    //float test = sqrt(normalizedDisplacement.x * normalizedDisplacement.x + normalizedDisplacement.y * normalizedDisplacement.y);
+    vec2 velocity = vec2::multiply(normalizedDisplacement, speed);
 
     return velocity;
 }
 
-void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<PlayerData>>& dataFrameMap)
+void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<PlayerData>>& dataFrameMap, int firstFrame)
 {
     std::ofstream os(fileName, std::ofstream::binary);
+    bool first = true;
+
     if (os)
     {
         ivec2 previousPos{ 0,0 };
-        for (auto& n : dataFrameMap)
-        {
-            os << "FRAME " << n.first << ": " << std::endl;
 
-            for (auto& p : dataFrameMap[n.first])
+        for (auto it = dataFrameMap.begin(); it != dataFrameMap.end(); ++it)
+        {
+            os << "FRAME " << it->first << ": " << std::endl;
+
+            //for (auto& p : dataFrameMap[it->first])
+            for (int x = 0; x <  dataFrameMap[it->first].size(); x++)
             {
-                vec2 velocity = calculateVelocity(p.position, previousPos, p.speed);
+                PlayerData p = dataFrameMap[it->first].at(x);
+                vec2 velocity{ 0.0f, 0.0f };
+
+                if (first)
+                {
+                    //first frame use current and next pos and first speed
+                    //auto next = std::next(it); //get the next frame
+                    //ivec2 nextPos = next->second.at(x).position;
+                    //float nextSpeed = next->second.at(x).speed;
+
+                   PlayerData nextP = dataFrameMap.find(firstFrame + 1)->second[x];
+
+                    velocity = calculateVelocity(nextP.position, p.position, p.speed);
+                }
+                else
+                {
+                    velocity = calculateVelocity(p.position, previousPos, p.speed);
+
+                }
 
                 os << "    {" << std::endl
                     << "        ID: " << p.Id << std::endl
                     << "        SHIRT NUMBER: " << p.shirtNumber << std::endl
                     << "        TEAM: " << p.teamId << std::endl
                     << "        POSITION: " << p.position.x << ", " << p.position.y << std::endl
-                    << "        VELOCITY: " << velocity.x << ", " << velocity.y << " cm/s" << std::endl
+                    << "        SPEED: " << (p.speed / 100.0f) << " m/s" << std::endl
+                    << "        VELOCITY: " << velocity.x << ", " << velocity.y << " m/s" << std::endl
                     << "    }" << std::endl;
 
                 previousPos = p.position;
             }
 
             os << "------------------------------------" << std::endl << std::endl;
+
+            first = false;
 
         }
 
@@ -230,7 +263,8 @@ int main()
         char* buffer = new char[length];
 
         std::map<int, std::vector<PlayerData>> dataFrameMap;
-
+        int firstFrameNumber = 0;
+        bool firstFrame = true;
 
         while (!is.eof())
         {
@@ -245,9 +279,6 @@ int main()
 
             if (frame.size() > 0)
             {
-
-
-
                 bool start = false;
 
                 std::string playerData = "";
@@ -281,8 +312,14 @@ int main()
                 }
 
                 //std::cout << playerData << std::endl;
-                std::cout << frameNumber << std::endl;
+                //std::cout << frameNumber << std::endl;
 
+                if (firstFrame)
+                {
+                    firstFrameNumber = std::stof(frameNumber);
+                    firstFrame = false;
+                    std::cout << firstFrameNumber << std::endl;
+                }
 
                 std::vector<std::string> playerData2 = splitString(playerData, ';');
 
@@ -323,7 +360,7 @@ int main()
 
 
         //formatAndSave("output.txt", dataFrameMap);
-        formatAndSaveVelocity("output.txt", dataFrameMap);
+        formatAndSaveVelocity("output.txt", dataFrameMap, firstFrameNumber);
 
     }
 
