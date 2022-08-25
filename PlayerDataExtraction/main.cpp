@@ -27,6 +27,30 @@ struct ivec2
     int y = 0;
 };
 
+struct vec2
+{
+    float x = 0.0f;
+    float y = 0.0f;
+
+    static vec2 subtract(vec2 a, vec2 b)
+    {
+        vec2 rtn{ a.x - b.x, a.y - b.y };
+        return rtn;
+    };
+
+    static vec2 multiply(vec2 a, float b)
+    {
+        vec2 rtn{ a.x * b, a.y * b };
+        return rtn;
+    };
+
+    static vec2 divide(vec2 a, float b)
+    {
+        vec2 rtn{ a.x / b, a.y / b };
+        return rtn;
+    };
+};
+
 struct PlayerData
 {
     ivec2 position;
@@ -131,10 +155,10 @@ void formatAndSave(std::string fileName, std::map<int, std::vector<PlayerData>>&
             for (auto& p : dataFrameMap[n.first])
             {
                 os << "    {" << std::endl
-                    << "        PLAYER: " << p.shirtNumber << std::endl
                     << "        ID: " << p.Id << std::endl
+                    << "        SHIRT NUMBER: " << p.shirtNumber << std::endl
                     << "        TEAM: " << p.teamId << std::endl
-                    << "        POSITION: " << p.position.x << "," << p.position.y << std::endl
+                    << "        POSITION: " << p.position.x << ", " << p.position.y << std::endl
                     << "        SPEED: " << p.speed << std::endl
                     << "    }" << std::endl;
             }
@@ -145,8 +169,52 @@ void formatAndSave(std::string fileName, std::map<int, std::vector<PlayerData>>&
         
         os.close();
     }
+}
 
+vec2 calculateVelocity(ivec2 _pos, ivec2 _prevPos, float _speed) 
+{
+    //Normalized displacement vector = Vector2.Normal(framePos - prevFramePos)
+    // velocity vector = above * speed
+    vec2 position{ _pos.x, _pos.y };
+    vec2 previousPosition{ _prevPos.x, _prevPos.y };
+    vec2 displacement =  vec2::subtract(position, previousPosition);
+    vec2 normalizedDisplacement = vec2::divide(displacement, 1.0f / 60.0f);
+    vec2 velocity = vec2::multiply(normalizedDisplacement, _speed);
 
+    return velocity;
+}
+
+void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<PlayerData>>& dataFrameMap)
+{
+    std::ofstream os(fileName, std::ofstream::binary);
+    if (os)
+    {
+        ivec2 previousPos{ 0,0 };
+        for (auto& n : dataFrameMap)
+        {
+            os << "FRAME " << n.first << ": " << std::endl;
+
+            for (auto& p : dataFrameMap[n.first])
+            {
+                vec2 velocity = calculateVelocity(p.position, previousPos, p.speed);
+
+                os << "    {" << std::endl
+                    << "        ID: " << p.Id << std::endl
+                    << "        SHIRT NUMBER: " << p.shirtNumber << std::endl
+                    << "        TEAM: " << p.teamId << std::endl
+                    << "        POSITION: " << p.position.x << ", " << p.position.y << std::endl
+                    << "        VELOCITY: " << velocity.x << ", " << velocity.y << " cm/s" << std::endl
+                    << "    }" << std::endl;
+
+                previousPos = p.position;
+            }
+
+            os << "------------------------------------" << std::endl << std::endl;
+
+        }
+
+        os.close();
+    }
 }
 
 int main()
@@ -254,7 +322,8 @@ int main()
         delete[] buffer;
 
 
-        formatAndSave("output.txt", dataFrameMap);
+        //formatAndSave("output.txt", dataFrameMap);
+        formatAndSaveVelocity("output.txt", dataFrameMap);
 
     }
 
