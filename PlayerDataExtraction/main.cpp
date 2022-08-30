@@ -199,8 +199,6 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
 
     if (os)
     {
-        ivec2 previousPos{ 0,0 };
-
         for (auto it = dataFrameMap.begin(); it != dataFrameMap.end(); ++it)
         {
             os << "FRAME " << it->first << ": " << std::endl;
@@ -218,15 +216,18 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
                     //ivec2 nextPos = next->second.at(x).position;
                     //float nextSpeed = next->second.at(x).speed;
 
-                   PlayerData nextP = dataFrameMap.find(firstFrame + 1)->second[x];
+                    PlayerData nextP = dataFrameMap.find(firstFrame + 1)->second[x];
 
                     velocity = calculateVelocity(nextP.position, p.position, p.speed);
                 }
                 else
                 {
-                    velocity = calculateVelocity(p.position, previousPos, p.speed);
+                    PlayerData previousP = dataFrameMap.find((it->first) - 1)->second[x];
 
+                    velocity = calculateVelocity(p.position, previousP.position, p.speed);
                 }
+
+                //vec2 nomralisedVector = vec2::divide(velocity, sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y)));
 
                 os << "    {" << std::endl
                     << "        ID: " << p.Id << std::endl
@@ -235,9 +236,10 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
                     << "        POSITION: " << p.position.x << ", " << p.position.y << std::endl
                     << "        SPEED: " << (p.speed / 100.0f) << " m/s" << std::endl
                     << "        VELOCITY: " << velocity.x << ", " << velocity.y << " m/s" << std::endl
+                    //<< "        NORM-VELOCITY: " << nomralisedVector.x << ", " << nomralisedVector.y << " m/s" << std::endl
+                    //<< "        NORM-MAGNITUDE: " << sqrt((nomralisedVector.x * nomralisedVector.x) + (nomralisedVector.y * nomralisedVector.y)) << std::endl
                     << "    }" << std::endl;
 
-                previousPos = p.position;
             }
 
             os << "------------------------------------" << std::endl << std::endl;
