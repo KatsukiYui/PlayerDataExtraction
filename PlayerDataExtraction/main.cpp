@@ -53,7 +53,7 @@ struct vec2
 
 struct PlayerData
 {
-    ivec2 position;
+    vec2 position;
     
     float speed = 0.0f; //cm/sec atm
 
@@ -115,17 +115,18 @@ PlayerData convert(std::string& input)
             }
             case 3: //speed
             {
-                output.position.x = std::stof(temp);
+                output.position.x = (float)((std::stof(temp)) / 100.0f);
                 break;
             }
             case 4: //team int
             {
-                output.position.y = (int)(std::stof(temp));
+                output.position.y = (float)((std::stof(temp)) / 100.0f);
                 break;
             }
             case 5: //ShirtNumber int
             {
-                output.speed = (std::stof(temp));
+                //output.speed = (float)((std::stof(temp)) / 100.0f);
+                output.speed = (float)(std::stof(temp));
                 break;
             }
             }
@@ -171,23 +172,27 @@ void formatAndSave(std::string fileName, std::map<int, std::vector<PlayerData>>&
     }
 }
 
-vec2 calculateVelocity(ivec2 _pos, ivec2 _prevPos, float _speed) 
+vec2 calculateVelocity(vec2 _pos, vec2 _prevPos, float _speed) 
 {
     //Normalized displacement vector = Vector2.Normal(framePos - prevFramePos)
     // velocity vector = above * speed
-    vec2 position{ _pos.x / 100.0f, _pos.y / 100.0f };
-    vec2 previousPosition{ _prevPos.x / 100.0f, _prevPos.y / 100.0f };
-    float speed = _speed / 100.0f;
+    vec2 position = _pos;
+    vec2 previousPosition = _prevPos;
+    float speed = _speed;
     vec2 displacement =  vec2::subtract(position, previousPosition);
 
     float magnitude = sqrt(displacement.x * displacement.x + displacement.y * displacement.y);
 
+    vec2 velocity{ 0, 0 };
 
-    // normalize vector
-    vec2 normalizedDisplacement = vec2::divide(displacement, magnitude);
+    if (magnitude > 0)
+    {
+        // normalize vector
+        vec2 normalizedDisplacement = vec2::divide(displacement, magnitude);
 
-    //float test = sqrt(normalizedDisplacement.x * normalizedDisplacement.x + normalizedDisplacement.y * normalizedDisplacement.y);
-    vec2 velocity = vec2::multiply(normalizedDisplacement, speed);
+        //float test = sqrt(normalizedDisplacement.x * normalizedDisplacement.x + normalizedDisplacement.y * normalizedDisplacement.y);
+        velocity = vec2::multiply(normalizedDisplacement, speed);
+    }
 
     return velocity;
 }
@@ -199,9 +204,14 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
 
     if (os)
     {
+
+        os << "{\"" << "frameData" << "\":[" << std::endl;
+
         for (auto it = dataFrameMap.begin(); it != dataFrameMap.end(); ++it)
         {
-            os << "FRAME " << it->first << ": " << std::endl;
+            //os << "{\"" << it->first << "\":[" << std::endl;
+
+            os << "\t{\"" << "playerData" << "\":[" << std::endl;
 
             //for (auto& p : dataFrameMap[it->first])
             for (int x = 0; x <  dataFrameMap[it->first].size(); x++)
@@ -229,20 +239,36 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
 
                 //vec2 nomralisedVector = vec2::divide(velocity, sqrt((velocity.x * velocity.x) + (velocity.y * velocity.y)));
 
-                os << "    {" << std::endl
-                    << "        ID: " << p.Id << std::endl
-                    << "        SHIRT NUMBER: " << p.shirtNumber << std::endl
-                    << "        TEAM: " << p.teamId << std::endl
-                    << "        POSITION: " << p.position.x << ", " << p.position.y << std::endl
-                    << "        SPEED: " << (p.speed / 100.0f) << " m/s" << std::endl
-                    << "        VELOCITY: " << velocity.x << ", " << velocity.y << " m/s" << std::endl
+                os << "\t\t{" << std::endl
+                    << "\t\t\t\"id\": " << p.Id << "," << std::endl
+                    << "\t\t\t\"shirtNumber\": " << p.shirtNumber << "," << std::endl
+                    << "\t\t\t\"team\": " << p.teamId << "," << std::endl
+                    << "\t\t\t\"position\": " << "[" << p.position.x << ", " << p.position.y << "]" << "," << std::endl
+                    << "\t\t\t\"speed\": " << p.speed << "," << std::endl
+                    << "\t\t\t\"velocity\": " << "[" << velocity.x << ", " << velocity.y << "]" << std::endl;
                     //<< "        NORM-VELOCITY: " << nomralisedVector.x << ", " << nomralisedVector.y << " m/s" << std::endl
                     //<< "        NORM-MAGNITUDE: " << sqrt((nomralisedVector.x * nomralisedVector.x) + (nomralisedVector.y * nomralisedVector.y)) << std::endl
-                    << "    }" << std::endl;
+
+                    if (x != (dataFrameMap[it->first].size() - 1))
+                    {
+                        os << "\t\t}," << std::endl;
+                    }
+                    else
+                    {
+                        os << "\t\t}" << std::endl;
+                    }       
 
             }
 
-            os << "------------------------------------" << std::endl << std::endl;
+            if (it != std::prev(dataFrameMap.end()))
+            {
+                os << "\t]}," << std::endl << std::endl;
+            }
+            else
+            {
+                os << "]}" << std::endl << "]}" << std::endl;
+            }
+            
 
             first = false;
 
