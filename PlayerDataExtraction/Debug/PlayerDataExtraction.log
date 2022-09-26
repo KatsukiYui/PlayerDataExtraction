@@ -1,4 +1,9 @@
 ﻿  main.cpp
-C:\Users\MINE_2\Documents\GitHub\PlayerDataExtraction\PlayerDataExtraction\main.cpp(140,20): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-C:\Users\MINE_2\Documents\GitHub\PlayerDataExtraction\PlayerDataExtraction\main.cpp(202,35): warning C4018: '<': signed/unsigned mismatch
-  PlayerDataExtraction.vcxproj -> C:\Users\MINE_2\Documents\GitHub\PlayerDataExtraction\Debug\PlayerDataExtraction.exe
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(103,42): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(108,38): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(113,47): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(217,31): warning C4018: '<': signed/unsigned mismatch
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(293,20): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(352,49): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\FRED\PlayerDataExtraction\PlayerDataExtraction\main.cpp(359,35): warning C4018: '<': signed/unsigned mismatch
+  PlayerDataExtraction.vcxproj -> D:\FRED\PlayerDataExtraction\Debug\PlayerDataExtraction.exe

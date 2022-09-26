@@ -1,0 +1,6 @@
+Away,SET PIECE,THROW IN,1,1795610,0,1795628,0,2,,,,,,,
+Away,PASS,,1,1795611,0,1795628,0,2,8,,,,,Both Hands,Standing Throw In
+Away,PASS,,1,1795640,0,1795650,0,8,2,,,,,Chest,Standing Chested
+Away,BALL LOST,CLEARANCE,1,1795656,0,1795720,0,2,,,,,,Right Foot,Lob Kick
+Home,RECOVERY,,1,1795720,0,1795720,0,6,,,,,,,
+Home,BALL LOST,,1,1795720,0,1795783,0,6,,,,,,Head,Standing Header

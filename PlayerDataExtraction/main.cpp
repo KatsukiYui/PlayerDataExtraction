@@ -46,7 +46,7 @@ struct PlayerData
 {
     vec2 position;
     
-    float speed = 0.0f;
+    float speed = -1.0f;
 
     int teamId = -1;
 
@@ -59,13 +59,39 @@ struct BallData
 {
     vec3 position; //change to meters
 
-    float speed = 0.0f;
+    float speed = -1.0f;
 
     std::string team = "";
 
     std::string state = "";
 
     std::string ballEvent = "";
+};
+
+struct EventData
+{
+    std::string team = "";
+
+    std::string type = "";
+
+    std::string subType = "";
+
+    int period = -1;
+
+    int startFrame = -1;
+
+    float startTime = -1.0f;
+
+    int endFrame = -1;
+
+    int fromPlayer = -1;
+
+    int toPlayer = -1;
+
+    std::string bodyPart = "";
+
+    std::string technique = "";
+
 };
 
 
@@ -103,35 +129,53 @@ PlayerData convert(std::string& input)
         {
             switch (component)
             {
-            case 0: //x
+            case 0:
             {
-                output.teamId = std::stof(temp);
+                if (temp != "" && temp != " ")
+                {
+                    output.teamId = std::stof(temp);
+                }
                 break;
             }
-            case 1: //y
+            case 1:
             {
-                output.Id = std::stof(temp);
+                if (temp != "" && temp != " ")
+                {
+                    output.Id = std::stof(temp);
+                }
                 break;
             }
-            case 2: //z
+            case 2:
             {
-                output.shirtNumber = std::stof(temp);
+                if (temp != "" && temp != " ")
+                {
+                    output.shirtNumber = std::stof(temp);
+                }
                 break;
             }
-            case 3: //speed
+            case 3:
             {
-                output.position.x = (float)((std::stof(temp)) / 100.0f);
+                if (temp != "" && temp != " ")
+                {
+                    output.position.x = (float)((std::stof(temp)) / 100.0f);
+                }
                 break;
             }
-            case 4: //team int
+            case 4:
             {
-                output.position.y = (float)((std::stof(temp)) / 100.0f);
+                if (temp != "" && temp != " ")
+                {
+                    output.position.y = (float)((std::stof(temp)) / 100.0f);
+                }
                 break;
             }
-            case 5: //ShirtNumber int
+            case 5:
             {
-                //output.speed = (float)((std::stof(temp)) / 100.0f);
-                output.speed = (float)(std::stof(temp));
+                if (temp != "" && temp != " ")
+                {
+                    //output.speed = (float)((std::stof(temp)) / 100.0f);
+                    output.speed = (float)(std::stof(temp));
+                }
                 break;
             }
             }
@@ -141,7 +185,10 @@ PlayerData convert(std::string& input)
         }
         else
         {
-            temp += input[i];
+            if (input[i] != ',' && input[i] != '\r')
+            {
+                temp += input[i];
+            }
         }
 
     }
@@ -164,21 +211,34 @@ BallData convertBall(std::string& input)
             {
             case 0:
             {
-                output.position.x = (float)((std::stof(temp)) / 100.0f);
+                if (temp != "" && temp != " ")
+                {
+                    output.position.x = (float)((std::stof(temp)) / 100.0f);
+                }
                 break;
             }
             case 1:
-            {    output.position.y = (float)((std::stof(temp)) / 100.0f);
-            break;
+            {    
+                if (temp != "" && temp != " ")
+                {
+                    output.position.y = (float)((std::stof(temp)) / 100.0f);
+                }
+                break;
             }
             case 2:
             {
-                output.position.z = (float)((std::stof(temp)) / 100.0f);
+                if (temp != "" && temp != " ")
+                {
+                    output.position.z = (float)((std::stof(temp)) / 100.0f);
+                }
                 break;
             }
             case 3:
             {
-                output.speed = (float)(std::stof(temp));
+                if (temp != "" && temp != " ")
+                {
+                    output.speed = (float)(std::stof(temp));
+                }
                 break;
             }
             case 4:
@@ -205,12 +265,123 @@ BallData convertBall(std::string& input)
         }
         else
         {
-            temp += input[i];
+            if (input[i] != ',' && input[i] != '\r')
+            {
+                temp += input[i];
+            }
         }
 
     }
 
     if (output.ballEvent == "") { output.ballEvent = "None"; };
+
+    return output;
+}
+
+EventData convertEvent(std::string& input)
+{
+    input += ","; //adding a coma at the end for the converter fn
+    EventData output;
+    std::string temp = "";
+    int component = 0;
+
+    for (std::string::size_type i = 0; i < input.size(); i++)
+    {
+        if (input[i] == ',')
+        {
+
+            switch (component)
+            {
+            case 0:
+            {
+                output.team = temp;
+                break;
+            }
+            case 1:
+            {    output.type = temp;
+            break;
+            }
+            case 2:
+            {
+                output.subType = temp;
+                break;
+            }
+            case 3:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.period = std::stof(temp);
+                }
+                break;
+            }
+            case 4:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.startFrame = std::stof(temp);
+                }
+                break;
+            }
+            case 5:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.startTime = (float)(std::stof(temp));
+                }
+                break;
+            }
+            case 6:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.endFrame = std::stof(temp);
+                }
+                break;
+            }
+            //7 end time not used
+            case 8:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.fromPlayer = std::stof(temp);
+                }
+                break;
+            }
+            case 9:
+            {
+                if (temp != "" && temp != " ")
+                {
+                    output.toPlayer = std::stof(temp);
+                }
+                break;
+            }
+            //10, 11, 12, 13 not used
+            case 14:
+            {
+                output.bodyPart = temp;
+                break;
+            }
+            case 15:
+            {
+                output.technique = temp;
+                break;
+            }
+            }
+
+
+            component++;
+            temp = "";
+
+        }
+        else
+        {
+            if (input[i] != ',' && input[i] != '\r')
+            {
+                temp += input[i];
+            }
+        }
+
+    }
 
     return output;
 }
@@ -362,14 +533,80 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
     }
 }
 
+void formatAndSaveEvent(std::string fileName, std::vector<EventData>& eventDataVector)
+{
+
+    std::ofstream os(fileName, std::ofstream::binary);
+
+    if (os)
+    {
+
+        os << "{\"" << "eventData" << "\":[" << std::endl;
+
+        for (int x = 0; x < eventDataVector.size(); x++)
+        {
+            EventData e = eventDataVector[x];
+
+            os << "\t{" << std::endl
+                << "\t\t\"team\": " << "\"" << e.team << "\"" << "," << std::endl
+                << "\t\t\"type\": " << "\"" << e.type << "\"" << "," << std::endl
+                << "\t\t\"subtype\": " << "\"" << e.subType << "\"" << "," << std::endl
+                << "\t\t\"period\": " << e.period << "," << std::endl
+                << "\t\t\"startFrame\": " << e.startFrame << "," << std::endl
+                << "\t\t\"startTime\": " << e.startTime << "," << std::endl
+                << "\t\t\"endFrame\": " << e.endFrame << "," << std::endl
+                << "\t\t\"fromPlayer\": " << e.fromPlayer << "," << std::endl
+                << "\t\t\"toPlayer\": " << e.toPlayer << "," << std::endl
+                << "\t\t\"bodyPart\": " << "\"" << e.bodyPart << "\"" << "," << std::endl
+                << "\t\t\"technique\": " << "\"" << e.technique << "\"" << std::endl;
+
+            if (x != (eventDataVector.size() - 1))
+            {
+                os << "\t}," << std::endl;
+            }
+            else
+            {
+                os << "\t}" << std::endl;
+            }
+        }
+
+        os << "\t]}" << std::endl;
+
+    }
+
+    os.close();
+}
+
+enum FileType{None, Tracking, Event};
+
 int main()
 {
+
+    FileType fileType = None;
+
+    while (fileType == None)
+    {
+        std::cout << "Please Enter File Type\n\t1] Tracking File\n\t2] Event File" << std::endl;
+        std::string temp;
+        std::cin >> temp;
+
+        if (temp == "1" || temp == "2")
+        {
+            fileType = FileType(std::stof(temp));
+        }
+        else
+        {
+            std::cout << "Invalid Option. Please Enter 1 or 2" << std::endl;
+        }
+    }
+
     std::string fileName;
     std::cout << "Enter File Name: " << std::endl;
     std::cin >> fileName;
     fileName += ".txt";
 
     std::ifstream is(fileName, std::ifstream::binary);
+
     if (is) 
     {
         // get length of file:
@@ -379,104 +616,150 @@ int main()
 
         char* buffer = new char[length];
 
-        std::map<int, std::vector<PlayerData>> dataFrameMap;
-        std::map<int, BallData> ballFrameMap;
-
-        float progress = 0;
-        float precentage = 0;
-
-        int firstFrameNumber = 0;
-        bool firstFrame = true;
-
-        while (!is.eof())
+        if (fileType == Tracking)
         {
-           
-            //player data in each frame
-            std::vector<PlayerData> playerDataVector;
 
-            is.getline(buffer, length);
+            std::map<int, std::vector<PlayerData>> dataFrameMap;
+            std::map<int, BallData> ballFrameMap;
 
+            float progress = 0;
+            float precentage = 0;
 
-            //convert frame to string
-            std::string frame(buffer);
+            int firstFrameNumber = 0;
+            bool firstFrame = true;
 
-            printf("\33[2K\r");
-
-            progress += frame.size();
-
-            precentage = progress / length * 100;
-
-            std::cout << precentage << "  \\  " << 100 ;
-
-            if (frame.size() > 0)
+            while (!is.eof())
             {
-                bool readingPlayer = false; //start reading player data
-                bool readingBall = false;
 
-                std::string playerDataString = "";
-                std::string ballDataString = "";
-                std::string frameNumber = "";
+                //player data in each frame
+                std::vector<PlayerData> playerDataVector;
 
-                //iterating over the frame's characters
-                for (std::string::size_type i = 0; i < frame.size(); i++)
+                is.getline(buffer, length);
+
+
+                //convert frame to string
+                std::string frame(buffer);
+
+                printf("\33[2K\r");
+
+                progress += frame.size();
+
+                precentage = progress / length * 100;
+
+                std::cout << precentage << "  \\  " << 100;
+
+                if (frame.size() > 0)
                 {
+                    bool readingPlayer = false; //start reading player data
+                    bool readingBall = false;
 
-                    if (frame[i] == ':')
+                    std::string playerDataString = "";
+                    std::string ballDataString = "";
+                    std::string frameNumber = "";
+
+                    //iterating over the frame's characters
+                    for (std::string::size_type i = 0; i < frame.size(); i++)
                     {
-                        if (!readingPlayer)
+
+                        if (frame[i] == ':')
                         {
-                            readingBall = false;
-                            readingPlayer = true;
+                            if (!readingPlayer)
+                            {
+                                readingBall = false;
+                                readingPlayer = true;
 
+                            }
+                            else if (!readingBall)
+                            {
+                                //read ball data
+                                readingPlayer = false;
+                                readingBall = true;
+                            }
                         }
-                        else if (!readingBall)
+                        else if (readingPlayer)
                         {
-                            //read ball data
-                            readingPlayer = false;
-                            readingBall = true;
+                            playerDataString += frame[i];
                         }
+                        else if (readingBall && frame[i] != ';')
+                        {
+                            ballDataString += frame[i];
+                        }
+                        else if (!readingPlayer && !readingBall)
+                        {
+                            frameNumber += frame[i];
+                        }
+
                     }
-                    else if (readingPlayer)
+
+                    if (firstFrame)
                     {
-                        playerDataString += frame[i];
+                        firstFrameNumber = std::stof(frameNumber);
+                        firstFrame = false;
                     }
-                    else if (readingBall && frame[i] != ';')
+
+                    std::vector<std::string> playerData = splitString(playerDataString, ';');
+
+                    for (int i = 0; i < playerData.size(); i++)
                     {
-                        ballDataString += frame[i];
+                        //std::cout << playerData2[i] << std::endl;
+
+                        PlayerData temp;
+
+                        temp = convert(playerData[i]);
+
+                        playerDataVector.push_back(temp);
                     }
-                    else if (!readingPlayer && !readingBall)
-                    {
-                        frameNumber += frame[i];
-                    }
+
+                    BallData ballData = convertBall(ballDataString);
+                    //save data onto the frame map
+                    dataFrameMap.emplace(int(std::stof(frameNumber)), playerDataVector);
+                    ballFrameMap.emplace(int(std::stof(frameNumber)), ballData);
 
                 }
-
-                if (firstFrame)
-                {
-                    firstFrameNumber = std::stof(frameNumber);
-                    firstFrame = false;
-                }
-
-                std::vector<std::string> playerData = splitString(playerDataString, ';');
-
-                for (int i = 0; i < playerData.size(); i++)
-                {
-                    //std::cout << playerData2[i] << std::endl;
-
-                    PlayerData temp;
-
-                    temp = convert(playerData[i]);
-
-                    playerDataVector.push_back(temp);
-                }
-
-                BallData ballData = convertBall(ballDataString);
-                //save data onto the frame map
-                dataFrameMap.emplace(int(std::stof(frameNumber)), playerDataVector);
-                ballFrameMap.emplace(int(std::stof(frameNumber)), ballData);
 
             }
 
+            //formatAndSave("output.txt", dataFrameMap);
+            formatAndSaveVelocity("tracking_output.txt", dataFrameMap, ballFrameMap, firstFrameNumber);
+        }
+
+        else if (fileType == Event)
+        {
+            std::vector<EventData> eventDataVector;
+
+            float progress = 0;
+            float precentage = 0;
+
+            while (!is.eof())
+            {
+
+                is.getline(buffer, length);
+
+                //convert event to string
+                std::string eventString(buffer);
+
+                printf("\33[2K\r");
+
+                progress += eventString.size();
+
+                precentage = progress / length * 100;
+
+                std::cout << precentage << "  \\  " << 100;
+
+                if (eventString.size() > 0)
+                {
+
+                    EventData eventData = convertEvent(eventString);
+
+                    //save data onto the frame map
+                    eventDataVector.push_back(eventData);
+
+                }
+
+            }
+
+            //formatAndSave("output.txt", dataFrameMap);
+            formatAndSaveEvent("event_output.txt", eventDataVector);
         }
 
         is.close();
@@ -484,14 +767,12 @@ int main()
         // ...buffer contains the entire file...
         delete[] buffer;
 
-
-        //formatAndSave("output.txt", dataFrameMap);
-        formatAndSaveVelocity("output.txt", dataFrameMap, ballFrameMap, firstFrameNumber);
-
         std::cout << std::endl << "Finished Exporting" << std::endl;
-
     }
-
+    else
+    {
+        std::cout << "Failed to Read File. Please Restart." << std::endl;
+    }
 
 	return 0;
 }

@@ -1,0 +1,80 @@
+{"eventData":[
+	{
+		"team": "Away",
+		"type": "SET PIECE",
+		"subtype": "THROW IN",
+		"period": 1,
+		"startFrame": 1795610,
+		"startTime": 0,
+		"endFrame": 1795628,
+		"fromPlayer": 2,
+		"toPlayer": -1,
+		"bodyPart": "",
+		"technique": ""
+	},
+	{
+		"team": "Away",
+		"type": "PASS",
+		"subtype": "",
+		"period": 1,
+		"startFrame": 1795611,
+		"startTime": 0,
+		"endFrame": 1795628,
+		"fromPlayer": 2,
+		"toPlayer": 8,
+		"bodyPart": "Both Hands",
+		"technique": "Standing Throw In"
+	},
+	{
+		"team": "Away",
+		"type": "PASS",
+		"subtype": "",
+		"period": 1,
+		"startFrame": 1795640,
+		"startTime": 0,
+		"endFrame": 1795650,
+		"fromPlayer": 8,
+		"toPlayer": 2,
+		"bodyPart": "Chest",
+		"technique": "Standing Chested"
+	},
+	{
+		"team": "Away",
+		"type": "BALL LOST",
+		"subtype": "CLEARANCE",
+		"period": 1,
+		"startFrame": 1795656,
+		"startTime": 0,
+		"endFrame": 1795720,
+		"fromPlayer": 2,
+		"toPlayer": -1,
+		"bodyPart": "Right Foot",
+		"technique": "Lob Kick"
+	},
+	{
+		"team": "Home",
+		"type": "RECOVERY",
+		"subtype": "",
+		"period": 1,
+		"startFrame": 1795720,
+		"startTime": 0,
+		"endFrame": 1795720,
+		"fromPlayer": 6,
+		"toPlayer": -1,
+		"bodyPart": "",
+		"technique": ""
+	},
+	{
+		"team": "Home",
+		"type": "BALL LOST",
+		"subtype": "",
+		"period": 1,
+		"startFrame": 1795720,
+		"startTime": 0,
+		"endFrame": 1795783,
+		"fromPlayer": 6,
+		"toPlayer": -1,
+		"bodyPart": "Head",
+		"technique": "Standing Header"
+	}
+	]}
