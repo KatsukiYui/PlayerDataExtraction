@@ -444,13 +444,26 @@ void formatAndSaveVelocity(std::string fileName, std::map<int, std::vector<Playe
     std::ofstream os(fileName, std::ofstream::binary);
     bool first = true;
 
+    float progress = 0;
+    float precentage = 0;
+
     if (os)
     {
+        //output start frame number
 
-        os << "{\"" << "frameData" << "\":[" << std::endl;
+        os << "{\"" << "startFrame" << "\":" << firstFrame << "," << std::endl
+            << "\"" << "frameData" << "\":[" << std::endl;
 
         for (auto it = dataFrameMap.begin(); it != dataFrameMap.end(); ++it)
         {
+
+            printf("\33[2K\r");
+
+            progress += 1.0f;
+
+            precentage = progress / (float)(dataFrameMap.size()) * 100;
+
+            std::cout << "Writing File " << precentage << "  \\  " << 100;
 
             os << "\t{\"" << "playerData" << "\":[" << std::endl;
 
@@ -538,6 +551,9 @@ void formatAndSaveEvent(std::string fileName, std::vector<EventData>& eventDataV
 
     std::ofstream os(fileName, std::ofstream::binary);
 
+    float progress = 0;
+    float precentage = 0;
+
     if (os)
     {
 
@@ -545,6 +561,15 @@ void formatAndSaveEvent(std::string fileName, std::vector<EventData>& eventDataV
 
         for (int x = 0; x < eventDataVector.size(); x++)
         {
+
+            printf("\33[2K\r");
+
+            progress += 1.0f;
+
+            precentage = progress / (float)(eventDataVector.size()) * 100;
+
+            std::cout << "Writing File " << precentage << "  \\  " << 100;
+
             EventData e = eventDataVector[x];
 
             os << "\t{" << std::endl
@@ -646,7 +671,7 @@ int main()
 
                 precentage = progress / length * 100;
 
-                std::cout << precentage << "  \\  " << 100;
+                std::cout << "Reading File " << precentage << "  \\  " << 100;
 
                 if (frame.size() > 0)
                 {
@@ -719,6 +744,8 @@ int main()
 
             }
 
+            std::cout << std::endl;
+
             //formatAndSave("output.txt", dataFrameMap);
             formatAndSaveVelocity("tracking_output.txt", dataFrameMap, ballFrameMap, firstFrameNumber);
         }
@@ -744,7 +771,7 @@ int main()
 
                 precentage = progress / length * 100;
 
-                std::cout << precentage << "  \\  " << 100;
+                std::cout << "Reading File" << precentage << "  \\  " << 100;
 
                 if (eventString.size() > 0)
                 {
@@ -757,6 +784,8 @@ int main()
                 }
 
             }
+
+            std::cout << std::endl;
 
             //formatAndSave("output.txt", dataFrameMap);
             formatAndSaveEvent("event_output.txt", eventDataVector);
